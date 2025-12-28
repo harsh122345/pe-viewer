@@ -25,6 +25,48 @@ st.set_page_config(layout="centered",
                                   "Report a Bug": "https://github.com/jkanner/pe-viewer/issues",
                                   "About": "This app was created by staff at the [Gravitational Wave Open Science Center](https://gwosc.org)."})
 
+import base64
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+    f"""
+    <style>
+    [data-testid="stAppViewContainer"] > .main {{
+        background-color: transparent;
+    }}
+    [data-testid="stAppViewContainer"] {{
+        background-image: url(data:image/{"jpg"};base64,{encoded_string.decode()});
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    /* Overlay for blur */
+    [data-testid="stAppViewContainer"]::before {{
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        z-index: -1;
+    }}
+    /* Make all text black for visibility in main area */
+    .stApp > header, .stApp > .main .block-container, h1, h2, h3, h4, h5, h6, p, span, div {{
+        color: black !important;
+    }}
+    /* Specific override for sidebar to be white */
+    [data-testid="stSidebar"] * {{
+        color: white !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+add_bg_from_local('img/background.jpg')
+
 st.title('GW Event Viewer')
 
 st.markdown("""Make plots of waveforms, source parameters, and skymaps for gravitational-wave events.

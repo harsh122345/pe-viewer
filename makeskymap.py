@@ -28,14 +28,18 @@ def make_skymap(chosenlist, datadict):
         # -- All other events       
         else:         
             data = datadict[ev]
-            aprx_dict[ev] = st.radio("Select set of samples to use", data.skymap.keys(), key='aprx_'+ev, format_func=frmt_keyname)
-            with lock:
-
-                try:
-                    fig = data.skymap[aprx_dict[ev]].plot(contour=[50, 90])
-                    st.pyplot(fig[0])
-                except:
-                    st.markdown("Failed to generate skymap")
+            
+            # Check if data has skymap attribute
+            if hasattr(data, 'skymap'):
+                aprx_dict[ev] = st.radio("Select set of samples to use", data.skymap.keys(), key='aprx_'+ev, format_func=frmt_keyname)
+                with lock:
+                    try:
+                        fig = data.skymap[aprx_dict[ev]].plot(contour=[50, 90])
+                        st.pyplot(fig[0])
+                    except:
+                        st.markdown("Failed to generate skymap")
+            else:
+                st.warning(f"Skymap data not available for {ev} (source file does not contain skymap data).")
 
 
         with st.expander('See code'):
